@@ -138,6 +138,11 @@ Exercício: modifique o programa da aula anterior para evitar condições de cor
 
 [Vamos no slide 55 da Intro to OpenMP](./Intro_To_OpenMP_Mattson.pdf)
 
+Nota: para determinar o tamanhp da linha de cache digite:
+```
+cat /sys/devices/system/cpu/cpu0/cache/index0/coherency_l
+ine_size
+```
 ## Afinidade / AFFINITY ##
 A afinidade de threads (Thread affinity ) restringe a execução de determinadas threads (unidades de execução virtual) a um subconjunto das unidades de processamento físico em um computador com multiprocessador. Dependendo da topologia da máquina, a afinidade de threads pode ter um efeito dramático na velocidade de execução de um programa.
 Isso minimiza a migração de threads e o custo da troca de contexto entre os núcleos (cores). Ela também melhora a localidade dos dados e reduz o tráfego de coerência de cache entre os núcleos (ou processadores).
