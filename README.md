@@ -109,8 +109,7 @@ Lastprivate passa o valor de uma private da última iteração para uma variáve
 void closer() { 
 	int tmp = 0;
 //cada thread recebe sua própria copia de tmp
-#pragma omp parallel for firstprivate(tmp) \ 
-lastprivate(tmp)
+#pragma omp parallel for firstprivate(tmp) lastprivate(tmp)
 for (int j = 0; j < 1000; ++j)
 	tmp += j; 
 	printf(“%d\n”, tmp);//tmp is defined as its value at the “last sequential” iteration (i.e., for j=999)
@@ -138,15 +137,8 @@ Exercício: modifique o programa da aula anterior para evitar condições de cor
 
 [Vamos no slide 55 da Intro to OpenMP](./Intro_To_OpenMP_Mattson.pdf)
 
-Nota: para determinar o tamanhp da linha de cache digite:
+Nota: para determinar o tamanho da linha de cache digite:
 ```
 cat /sys/devices/system/cpu/cpu0/cache/index0/coherency_l
 ine_size
 ```
-## Afinidade / AFFINITY ##
-A afinidade de threads (Thread affinity ) restringe a execução de determinadas threads (unidades de execução virtual) a um subconjunto das unidades de processamento físico em um computador com multiprocessador. Dependendo da topologia da máquina, a afinidade de threads pode ter um efeito dramático na velocidade de execução de um programa.
-Isso minimiza a migração de threads e o custo da troca de contexto entre os núcleos (cores). Ela também melhora a localidade dos dados e reduz o tráfego de coerência de cache entre os núcleos (ou processadores).
-OpenMP tem a capacidade de vincular (bind) threads OpenMP a unidades de processamento físico. A interface é controlada usando uma variável de ambiente cujo nome depende do compilador em uso. Ex. para Intel use KMP_AFFINITY.
-https://gcc.gnu.org/onlinedocs/libgomp/GOMP_005fCPU_005fAFFINITY.html#GOMP_005fCPU_005fAFFINITY
-
-Exercício: [Multiplicação de matrizes](./profiling)
