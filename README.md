@@ -69,7 +69,7 @@ private(var) cria uma nova cópia local de var para cada thread. Mas preste aten
 * **O valor NÃO está inicializado** - 
 * Em OpenMP 2.5 o valor da variável compartilhada está indefinido após a região.
 
-**Boa prática! Declare todos seus dados privados por default!**
+**Boa prática: Declare todos seus dados privados por default!**
 ```cpp
 #pragma omp parallel for default(none) private(lista de variáveis) shared(lista de variáveis)
 ```
