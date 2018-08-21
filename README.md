@@ -157,7 +157,6 @@ Exercício: modifique o programa da aula anterior para evitar condições de cor
 [Vamos no slide 55 da Intro to OpenMP](./Intro_To_OpenMP_Mattson.pdf)
 
 Nota: para determinar o tamanho da linha de cache digite:
-```
-cat /sys/devices/system/cpu/cpu0/cache/index0/coherency_l
-ine_size
+```bash
+cat /sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size
 ```
