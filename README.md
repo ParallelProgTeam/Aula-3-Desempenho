@@ -55,21 +55,23 @@ int i;
 ```
 Alterando os atributos de armazenamento:
 É possível alterar seletivamente atributos de armazenamento para construções usando as seguintes cláusulas:
-– SHARED
-– PRIVATE
-– FIRSTPRIVATE
+* SHARED
+* PRIVATE
+* FIRSTPRIVATE
 (Todas as cláusulas aplicam-se à construção do OpenMP, NÃO para toda a região.)
 O valor final de um private dentro de um loop paralelo pode ser transmitido para a variável compartilhada fora do loop com:
-– LASTPRIVATE
+* LASTPRIVATE
 Os atributos padrão podem ser substituídos com:
-– DEFAULT (PRIVATE | SHARED | NONE)
+* DEFAULT (PRIVATE | SHARED | NONE)
 
 private(var) cria uma nova cópia local de var para cada thread. Mas preste atenção a que:
-– **O valor NÃO está inicializado**
-– Em OpenMP 2.5 o valor da variável compartilhada está indefinido após a região.
-Boa prática! Declare todos seus dados privador por default!
+
+* **O valor NÃO está inicializado** - 
+* Em OpenMP 2.5 o valor da variável compartilhada está indefinido após a região.
+
+**Boa prática! Declare todos seus dados privados por default!**
 ```cpp
-#pragma omp parallel for default(shared) private(c,eps)
+#pragma omp parallel for default(none) private(lista de variáveis) shared(lista de variáveis)
 ```
 Ainda temos problemas. Como inicializarmos variáveis privadas?
 ```cpp
