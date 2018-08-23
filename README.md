@@ -4,7 +4,7 @@
 
 Aula baseada nos slides em https://www.openmp.org/wp-content/uploads/omp-hands-on-SC08.pdf. [O arquivo ](./OpenMP-4.0-C.pdf) contém uma Quick Reference Card de OpenMP 4.0.
 
-A maior parte dos cõdigos entregues na aula anterior tinham um erro que gerava execuçòes incorretas: o valor de Pi era diferente em cada execução. 
+A maior parte dos códigos entregues na aula anterior tinham um erro que gerava execuçòes incorretas: o valor de Pi era diferente em cada execução. 
 
 ```cpp
 #pragma omp parallel
@@ -55,46 +55,63 @@ int i;
 ```
 Alterando os atributos de armazenamento:
 É possível alterar seletivamente atributos de armazenamento para construções usando as seguintes cláusulas:
-– SHARED
-– PRIVATE
-– FIRSTPRIVATE
+* SHARED
+* PRIVATE
+* FIRSTPRIVATE
 (Todas as cláusulas aplicam-se à construção do OpenMP, NÃO para toda a região.)
 O valor final de um private dentro de um loop paralelo pode ser transmitido para a variável compartilhada fora do loop com:
-– LASTPRIVATE
+* LASTPRIVATE
 Os atributos padrão podem ser substituídos com:
-– DEFAULT (PRIVATE | SHARED | NONE)
+* DEFAULT (PRIVATE | SHARED | NONE)
 
-private(var) cria uma nova cópia local de var para cada thread. 
-– The value is uninitialized
-– In OpenMP 2.5 the value of the shared variable is undefined after the region
+private(var) cria uma nova cópia local de var para cada thread. Mas preste atenção a que:
+
+* **O valor NÃO está inicializado** - 
+* Em OpenMP 2.5 o valor da variável compartilhada está indefinido após a região.
+
+**Boa prática: Declare todos seus dados privados por default!**
+```cpp
+#pragma omp parallel for default(none) private(lista de variáveis) shared(lista de variáveis)
+```
+Ainda temos problemas. Como inicializarmos variáveis privadas?
 ```cpp
 void wrong() { 
   int tmp = 0;
-#pragma omp for private(tmp) 
+  #pragma omp for private(tmp) 
   for (int j = 0; j < 1000; ++j)
-	tmp+=j; //tmp não inicializado
-	printf(“%d\n”, tmp); //tmp: 0 em OpenMP 3.0, nao especificado em 2.5
+	tmp+=j; //tmp não foi inicializado!
+  printf(“%d\n”, tmp); //O valor da variável na thread master tmp: 0 em OpenMP 3.0, nao especificado em 2.5
 }
 ```
+Outro exemplo:
 
-```cpp
-int tmp;
-void danger() {
-	tmp = 0;
-#pragma omp parallel private(tmp)
-	work(); 
-	printf(“%d\n”, tmp);//tmp tem valor indefinido
-}
-```
 ```cpp
 extern int tmp; 
 void work() {
-	tmp = 5; //indefinido qual copia de tmp
+  tmp = 5; //indefinido qual copia de tmp
+}
+
+int tmp;
+void danger() {
+  tmp = 0;
+  #pragma omp parallel private(tmp)
+    work(); 
+    printf(“%d\n”, tmp);//tmp tem valor indefinido
 }
 ```
 Firstprivate : caso especial de private.
 – Inicializa cada variável privada com o valor correspondente na thread **master**
 
+Exemplo: cada cópia da variável incr é inicializada com 0.
+```cpp
+incr = 0;
+#pragma omp parallel for firstprivate(incr)
+for (i = 0; i <= MAX; i++) {
+  if ((i%2)==0) incr++;
+    A[i] = incr;
+}
+```
+E como copiar de volta um valor de uma variável privada para a variável da thread master?
 ```cpp
 void useless() { 
 	int tmp = 0;
@@ -104,6 +121,7 @@ void useless() {
 	printf(“%d\n”, tmp);//tmp: 0 em 3.0, indefinido em 2.5
 }
 ```
+
 Lastprivate passa o valor de uma private da última iteração para uma variável global.
 ```cpp
 void closer() { 
@@ -115,6 +133,7 @@ for (int j = 0; j < 1000; ++j)
 	printf(“%d\n”, tmp);//tmp is defined as its value at the “last sequential” iteration (i.e., for j=999)
 }
 ```
+
 
 ```cpp
 #include <omp.h>
@@ -138,7 +157,6 @@ Exercício: modifique o programa da aula anterior para evitar condições de cor
 [Vamos no slide 55 da Intro to OpenMP](./Intro_To_OpenMP_Mattson.pdf)
 
 Nota: para determinar o tamanho da linha de cache digite:
-```
-cat /sys/devices/system/cpu/cpu0/cache/index0/coherency_l
-ine_size
+```bash
+cat /sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size
 ```
